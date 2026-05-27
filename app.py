@@ -76,13 +76,13 @@ Additional Notes: {data.get('additional_notes') or 'None provided'}"""
 
 def create_monday_record(lead_data):
     try:
-        api_key = st.secrets["MONDAY_API_KEY"]
+        api_key  = st.secrets["MONDAY_API_KEY"]
         board_id = st.secrets["MONDAY_BOARD_ID"]
 
         item_name = lead_data.get("contact_name", lead_data.get("company_name", "Unknown"))
 
         strengths = lead_data.get("key_strengths", [])
-        concerns = lead_data.get("key_concerns", [])
+        concerns  = lead_data.get("key_concerns", [])
         if isinstance(strengths, list):
             strengths = "; ".join(strengths)
         if isinstance(concerns, list):
@@ -131,16 +131,16 @@ def create_monday_record(lead_data):
         response = requests.post(
             "https://api.monday.com/v2",
             headers={
-                "Authorization":  api_key,
-                "Content-Type":   "application/json",
-                "API-Version":    "2024-01",
+                "Authorization": api_key,
+                "Content-Type":  "application/json",
+                "API-Version":   "2024-01",
             },
             json={
                 "query": mutation,
                 "variables": {
-                    "boardId":       board_id,
-                    "itemName":      item_name,
-                    "columnValues":  json.dumps(column_values),
+                    "boardId":      board_id,
+                    "itemName":     item_name,
+                    "columnValues": json.dumps(column_values),
                 },
             },
         )
@@ -175,18 +175,14 @@ if st.session_state.stage == "form":
 
     with st.form("intake_form"):
         business_name = st.text_input("Business Name *")
-        contact_name = st.text_input("Contact Person Full Name *")
+        contact_name  = st.text_input("Contact Person Full Name *")
 
         contact_title = st.selectbox(
             "Your Title *",
             [
                 "Select your title",
-                "Owner",
-                "CEO",
-                "President",
-                "Partner",
-                "Co-Founder",
-                "Other",
+                "Owner", "CEO", "President",
+                "Partner", "Co-Founder", "Other",
             ],
         )
 
@@ -211,12 +207,8 @@ if st.session_state.stage == "form":
             "Annual Revenue *",
             [
                 "Select revenue range",
-                "Under $2M",
-                "$2M to $4M",
-                "$4M to $7M",
-                "$7M to $15M",
-                "$15M to $30M",
-                "Over $30M",
+                "Under $2M", "$2M to $4M", "$4M to $7M",
+                "$7M to $15M", "$15M to $30M", "Over $30M",
             ],
         )
 
@@ -234,10 +226,8 @@ if st.session_state.stage == "form":
             "Exit Timeline *",
             [
                 "Select timeline",
-                "Within 6 months",
-                "6 to 12 months",
-                "1 to 2 years",
-                "Just exploring",
+                "Within 6 months", "6 to 12 months",
+                "1 to 2 years", "Just exploring",
             ],
         )
 
@@ -245,21 +235,14 @@ if st.session_state.stage == "form":
             "Primary Motivation *",
             [
                 "Select motivation",
-                "Legacy and employees",
-                "Best price",
-                "Retirement",
-                "Other",
+                "Legacy and employees", "Best price",
+                "Retirement", "Other",
             ],
         )
 
         management_team = st.selectbox(
             "Does a management team exist that can run without you? *",
-            [
-                "Select option",
-                "Yes fully",
-                "Partially",
-                "No just me",
-            ],
+            ["Select option", "Yes fully", "Partially", "No just me"],
         )
 
         location = st.text_input("Location — City and State *")
@@ -274,16 +257,13 @@ if st.session_state.stage == "form":
             "How did you hear about SIG? *",
             [
                 "Select option",
-                "Google search",
-                "Broker referral",
-                "Friend or colleague",
-                "Social media",
-                "Other",
+                "Google search", "Broker referral",
+                "Friend or colleague", "Social media", "Other",
             ],
         )
 
         reason_for_selling = st.text_area("Reason for Selling *")
-        additional_notes = st.text_area("Additional Notes (optional)")
+        additional_notes   = st.text_area("Additional Notes (optional)")
 
         submitted = st.form_submit_button("Submit Inquiry")
 
@@ -367,7 +347,7 @@ elif st.session_state.stage == "processing":
 # ── SCREEN 3: RESULT ──────────────────────────────────────────────────────────
 elif st.session_state.stage == "result":
     result = st.session_state.result
-    score = int(result.get("qualification_score", 0))
+    score  = int(result.get("qualification_score", 0))
 
     st.title("SIG Partners")
 
@@ -392,7 +372,7 @@ elif st.session_state.stage == "result":
     st.subheader("Who We Heard From")
     col_w1, col_w2 = st.columns(2)
     col_w1.metric("Contact", result.get("contact_name", "N/A"))
-    col_w2.metric("Title", result.get("contact_title", "N/A"))
+    col_w2.metric("Title",   result.get("contact_title", "N/A"))
 
     st.divider()
 
@@ -400,10 +380,10 @@ elif st.session_state.stage == "result":
     col1, col2 = st.columns(2)
     with col1:
         st.metric("Business Name", result.get("company_name", "N/A"))
-        st.metric("Revenue", result.get("estimated_revenue", "N/A"))
+        st.metric("Revenue",       result.get("estimated_revenue", "N/A"))
     with col2:
         st.metric("Industry", result.get("industry", "N/A"))
-        st.metric("Score", f"{score} / 10")
+        st.metric("Score",    f"{score} / 10")
 
     st.divider()
 
@@ -412,25 +392,25 @@ elif st.session_state.stage == "result":
 
     key_strengths = result.get("key_strengths", [])
     if key_strengths:
-        items = (
+        bullets = (
             "<br>".join(f"&bull; {s}" for s in key_strengths)
             if isinstance(key_strengths, list)
             else str(key_strengths)
         )
         st.markdown(
-            f'<p style="color:#2E7D32;"><strong>Strengths:</strong><br>{items}</p>',
+            f'<p style="color:#2E7D32;"><strong>Strengths:</strong><br>{bullets}</p>',
             unsafe_allow_html=True,
         )
 
     key_concerns = result.get("key_concerns", [])
     if key_concerns:
-        items = (
+        bullets = (
             "<br>".join(f"&bull; {c}" for c in key_concerns)
             if isinstance(key_concerns, list)
             else str(key_concerns)
         )
         st.markdown(
-            f'<p style="color:#B45309;"><strong>Considerations:</strong><br>{items}</p>',
+            f'<p style="color:#B45309;"><strong>Considerations:</strong><br>{bullets}</p>',
             unsafe_allow_html=True,
         )
 
